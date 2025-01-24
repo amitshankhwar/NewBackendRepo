@@ -34,4 +34,92 @@ async function handleRegisterController(req, res) {
   // handle login
 }
 
-export { handleRegisterController };
+async function handleLoginController(req, res) {
+  const { email, password } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(400).json({ messsage: "user not registered!!" });
+    }
+
+    const verifyPassword = await bcryptjs.compare(password, user.password);
+
+    if (!verifyPassword) {
+      return res.status(400).json({ message: "password is incorrect!!" });
+    }
+
+    return res.status(200).json({ messsage: "user logged in successfully!!" });
+  } catch (error) {
+    return res.status(400).json({ messsage: "internal server error", error });
+  }
+}
+
+async function handleGetAllUsersController(req, res) {
+  try {
+    const allUsers = await User.find();
+
+    if (!allUsers) {
+      return res
+        .status(400)
+        .json({ success: false, message: "data not found" });
+    }
+
+    return res
+      .status(200)
+      .json({ success: true, message: "data found successfully", allUsers });
+  } catch (error) {
+    return res.status(400).json({ messsage: "internal server error", error });
+  }
+}
+
+async function handleUserUpdateController(req, res) {
+  try {
+    const { id } = req.params;
+
+    const { name } = req.body;
+
+    const updatedUser = await User.findByIdAndUpdate({ _id: id }, { name });
+
+    if (!updatedUser) {
+      return res
+        .status(400)
+        .json({ success: false, message: "user not found" });
+    }
+
+    return res
+      .status(200)
+      .json({ success: true, message: "user updated successfully" });
+  } catch (error) {
+    return res.status(400).json({ messsage: "internal server error", error });
+  }
+}
+
+async function handleUserDeleteController(req, res) {
+  try {
+    const { id } = req.params;
+
+    const deletedUser = await User.findByIdAndDelete({ _id: id });
+
+    if (!deletedUser) {
+      return res
+        .status(400)
+        .json({ success: false, message: "user not found" });
+    }
+
+    return res
+      .status(200)
+      .json({ success: true, message: "user deleted successfully" });
+  } catch (error) {
+    return res.status(400).json({ messsage: "internal server error", error });
+  }
+}
+
+export {
+  handleRegisterController,
+  handleLoginController,
+  handleGetAllUsersController,
+  handleUserUpdateController,
+  handleUserDeleteController,
+};
