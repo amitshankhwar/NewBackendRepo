@@ -6,14 +6,15 @@ import {
   handleUserDeleteController,
   handleUserUpdateController,
 } from "../controllers/userControllers.js";
+import auth from "../middlewares/auth.js";
 
-const router = express.Router();
+const router = express.Router(); //CRUD -> CREATE , read, update, delete
 
 router.post("/register", handleRegisterController);
 
 router.post("/login", handleLoginController);
 
-router.get("/getusers", handleGetAllUsersController);
+router.get("/getusers", auth, handleGetAllUsersController);
 
 router.put("/update/:id", handleUserUpdateController);
 

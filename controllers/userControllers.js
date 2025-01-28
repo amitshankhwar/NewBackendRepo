@@ -1,5 +1,6 @@
 import User from "../models/userSchema.js";
 import bcryptjs from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 async function handleRegisterController(req, res) {
   try {
@@ -50,7 +51,24 @@ async function handleLoginController(req, res) {
       return res.status(400).json({ message: "password is incorrect!!" });
     }
 
-    return res.status(200).json({ messsage: "user logged in successfully!!" });
+    //JWT AUTHENTICATION
+
+    const token = await jwt.sign({ userId: user._id }, process.env.SECRET_KEY, {
+      expiresIn: "1h",
+    });
+
+    return res
+      .status(200)
+      .cookie("token", token, {
+        httpOnly: true,
+        sameSite: "strict",
+        maxAge: 24 * 60 * 60 * 1000,
+      })
+      .json({
+        success: true,
+        message: "user logged in successfully",
+        token,
+      });
   } catch (error) {
     return res.status(400).json({ messsage: "internal server error", error });
   }
