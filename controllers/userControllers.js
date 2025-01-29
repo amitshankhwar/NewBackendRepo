@@ -96,9 +96,12 @@ async function handleUserUpdateController(req, res) {
   try {
     const { id } = req.params;
 
-    const { name } = req.body;
+    const { name, role } = req.body;
 
-    const updatedUser = await User.findByIdAndUpdate({ _id: id }, { name });
+    const updatedUser = await User.findByIdAndUpdate(
+      { _id: id },
+      { name, role }
+    );
 
     if (!updatedUser) {
       return res

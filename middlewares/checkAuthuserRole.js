@@ -1,10 +1,9 @@
 import jwt from "jsonwebtoken";
-import User from "../models/userSchema.js";
 import dotenv from "dotenv";
 
 dotenv.config();
 
-async function auth(req, res, next) {
+async function checkAuthUserRole(req, res, next) {
   try {
     const token = req.cookies.token;
 
@@ -22,19 +21,7 @@ async function auth(req, res, next) {
         .json({ success: false, message: "user not authorized" });
     }
 
-    const { userId } = decoded;
-
-    const userInfo = await User.findOne({ _id: userId });
-
-    console.log(userInfo);
-
-    if (userInfo.role !== "admin") {
-      return res
-        .status(400)
-        .json({ success: false, message: "Permission denied" });
-    }
-
-    req.userId = userId;
+    req.userId = decoded.userId;
 
     next();
   } catch (error) {
@@ -47,4 +34,4 @@ async function auth(req, res, next) {
   }
 }
 
-export default auth;
+export default checkAuthUserRole;
