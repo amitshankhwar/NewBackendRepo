@@ -27,9 +27,13 @@ async function handleRegisterController(req, res) {
 
     await newUser.save();
 
-    return res.status(201).json({ message: "User registered successfully" });
+    return res
+      .status(201)
+      .json({ success: true, message: "User registered successfully" });
   } catch (error) {
-    return res.status(500).json({ message: "Internal server error" });
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal server error" });
   }
 
   // handle login
@@ -42,13 +46,17 @@ async function handleLoginController(req, res) {
     const user = await User.findOne({ email });
 
     if (!user) {
-      return res.status(400).json({ messsage: "user not registered!!" });
+      return res
+        .status(200)
+        .json({ success: false, message: "user not registered!!" });
     }
 
     const verifyPassword = await bcryptjs.compare(password, user.password);
 
     if (!verifyPassword) {
-      return res.status(400).json({ message: "password is incorrect!!" });
+      return res
+        .status(200)
+        .json({ success: false, message: "password is incorrect!!" });
     }
 
     //JWT AUTHENTICATION
@@ -70,7 +78,9 @@ async function handleLoginController(req, res) {
         token,
       });
   } catch (error) {
-    return res.status(400).json({ messsage: "internal server error", error });
+    return res
+      .status(400)
+      .json({ success: false, messsage: "internal server error", error });
   }
 }
 
