@@ -3,7 +3,9 @@ import {
   handleGetAllUsersController,
   handleLoginController,
   handleRegisterController,
+  handleSingleUserData,
   handleUserDeleteController,
+  handleUserLogoutController,
   handleUserUpdateController,
 } from "../controllers/userControllers.js";
 import auth from "../middlewares/auth.js";
@@ -20,5 +22,9 @@ router.get("/getusers", checkAuthUserRole, handleGetAllUsersController);
 router.put("/update/:id", auth, handleUserUpdateController);
 
 router.delete("/delete/:id", auth, handleUserDeleteController);
+
+router.get("/single-user", checkAuthUserRole, handleSingleUserData);
+
+router.get("/logout", handleUserLogoutController);
 
 export default router;

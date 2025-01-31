@@ -147,10 +147,46 @@ async function handleUserDeleteController(req, res) {
   }
 }
 
+async function handleUserLogoutController(req, res) {
+  try {
+    return res.status(200).cookie("token", "").json({
+      success: true,
+      message: "user logout successfully",
+    });
+  } catch (error) {
+    return res.status(400).json({ messsage: "internal server error", error });
+  }
+}
+
+async function handleSingleUserData(req, res) {
+  const id = req.userId;
+
+  try {
+    const userInfo = await User.findOne({ _id: id }).select("-password");
+
+    if (!userInfo) {
+      res.status(200).json({
+        success: false,
+        message: "user not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "user found",
+      userInfo,
+    });
+  } catch (error) {
+    return res.status(400).json({ messsage: "internal server error", error });
+  }
+}
+
 export {
   handleRegisterController,
   handleLoginController,
   handleGetAllUsersController,
   handleUserUpdateController,
   handleUserDeleteController,
+  handleUserLogoutController,
+  handleSingleUserData,
 };
