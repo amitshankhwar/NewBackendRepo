@@ -7,6 +7,7 @@ import {
   handleUserDeleteController,
   handleUserLogoutController,
   handleUserUpdateController,
+  isAuth,
 } from "../controllers/userControllers.js";
 import auth from "../middlewares/auth.js";
 import checkAuthUserRole from "../middlewares/checkAuthuserRole.js";
@@ -26,5 +27,7 @@ router.delete("/delete/:id", auth, handleUserDeleteController);
 router.get("/single-user", checkAuthUserRole, handleSingleUserData);
 
 router.get("/logout", handleUserLogoutController);
+
+router.get("/verify-token", isAuth);
 
 export default router;

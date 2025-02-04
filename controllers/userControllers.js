@@ -181,6 +181,26 @@ async function handleSingleUserData(req, res) {
   }
 }
 
+async function isAuth(req, res) {
+  const token = req.cookies.token; // Access HttpOnly cookie
+
+  if (!token) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.SECRET_KEY);
+
+    const _id = decoded.userId;
+
+    const userInfo = await User.findOne({ _id });
+
+    return res.status(200).json({ valid: true, userInfo });
+  } catch (err) {
+    return res.status(401).json({ message: "Invalid or expired token" });
+  }
+}
+
 export {
   handleRegisterController,
   handleLoginController,
@@ -189,4 +209,5 @@ export {
   handleUserDeleteController,
   handleUserLogoutController,
   handleSingleUserData,
+  isAuth,
 };
