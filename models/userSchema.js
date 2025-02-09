@@ -24,6 +24,19 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+const taskSchema = new mongoose.Schema({
+  title: String,
+  description: String,
+  assignedTo: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  status: {
+    type: String,
+    enum: ["pending", "accepted", "completed", "reviewed"],
+    default: "pending",
+  },
+  proof: String,
+});
+
+const task = mongoose.model("Task", taskSchema);
 const User = mongoose.model("user", userSchema);
 
-export default User;
+export { User, task };
