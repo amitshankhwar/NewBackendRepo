@@ -1,28 +1,31 @@
-import User from "../models/userSchema.js";
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { User } from "../models/userSchema.js";
 
 async function handleRegisterController(req, res) {
   try {
-    const { name, email, password, role } = req.body;
+    const { username, email, password } = req.body;
 
-    if (!name || !email || !password || !role) {
-      return res.status(400).json({ message: "All fields are required" });
+    if (!username || !email || !password) {
+      return res
+        .status(400)
+        .json({ success: false, message: "All fields are required" });
     }
 
     const user = await User.findOne({ email });
 
     if (user) {
-      return res.status(400).json({ message: "User already exists" });
+      return res
+        .status(400)
+        .json({ success: false, message: "User already exists" });
     }
 
     const hashedPassword = await bcryptjs.hash(password, 10);
 
     const newUser = new User({
-      name,
+      username,
       email,
       password: hashedPassword,
-      role,
     });
 
     await newUser.save();
@@ -84,97 +87,11 @@ async function handleLoginController(req, res) {
   }
 }
 
-async function handleGetAllUsersController(req, res) {
-  try {
-    const allUsers = await User.find();
-
-    if (!allUsers) {
-      return res
-        .status(400)
-        .json({ success: false, message: "data not found" });
-    }
-
-    return res
-      .status(200)
-      .json({ success: true, message: "data found successfully", allUsers });
-  } catch (error) {
-    return res.status(400).json({ messsage: "internal server error", error });
-  }
-}
-
-async function handleUserUpdateController(req, res) {
-  try {
-    const { id } = req.params;
-
-    const { name, role } = req.body;
-
-    const updatedUser = await User.findByIdAndUpdate(
-      { _id: id },
-      { name, role }
-    );
-
-    if (!updatedUser) {
-      return res
-        .status(400)
-        .json({ success: false, message: "user not found" });
-    }
-
-    return res
-      .status(200)
-      .json({ success: true, message: "user updated successfully" });
-  } catch (error) {
-    return res.status(400).json({ messsage: "internal server error", error });
-  }
-}
-
-async function handleUserDeleteController(req, res) {
-  try {
-    const { id } = req.params;
-
-    const deletedUser = await User.findByIdAndDelete({ _id: id });
-
-    if (!deletedUser) {
-      return res
-        .status(400)
-        .json({ success: false, message: "user not found" });
-    }
-
-    return res
-      .status(200)
-      .json({ success: true, message: "user deleted successfully" });
-  } catch (error) {
-    return res.status(400).json({ messsage: "internal server error", error });
-  }
-}
-
 async function handleUserLogoutController(req, res) {
   try {
     return res.status(200).cookie("token", "").json({
       success: true,
       message: "user logout successfully",
-    });
-  } catch (error) {
-    return res.status(400).json({ messsage: "internal server error", error });
-  }
-}
-
-async function handleSingleUserData(req, res) {
-  const id = req.userId;
-
-  try {
-    const userInfo = await User.findOne({ _id: id }).select("-password");
-
-    if (!userInfo) {
-      res.status(200).json({
-        success: false,
-        message: "user not found",
-      });
-    }
-
-    return res.status(200).json({
-      success: true,
-      message: "user found",
-      userInfo,
     });
   } catch (error) {
     return res.status(400).json({ messsage: "internal server error", error });
@@ -204,10 +121,6 @@ async function isAuth(req, res) {
 export {
   handleRegisterController,
   handleLoginController,
-  handleGetAllUsersController,
-  handleUserUpdateController,
-  handleUserDeleteController,
   handleUserLogoutController,
-  handleSingleUserData,
   isAuth,
 };

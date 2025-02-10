@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema(
   {
-    name: {
+    username: {
       type: String,
       required: true,
     },
@@ -16,7 +16,6 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      required: true,
       enum: ["user", "admin"],
       default: "user",
     },
@@ -36,7 +35,7 @@ const taskSchema = new mongoose.Schema({
   proof: String,
 });
 
-const task = mongoose.model("Task", taskSchema);
+const Task = mongoose.model("Task", taskSchema);
 const User = mongoose.model("user", userSchema);
 
-export { User, task };
+export { User, Task };
