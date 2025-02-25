@@ -35,7 +35,6 @@ const taskSchema = new mongoose.Schema({
   proof: String,
 });
 
-const Task = mongoose.model("Task", taskSchema);
 const User = mongoose.model("user", userSchema);
 
-export { User, Task };
+export default User;

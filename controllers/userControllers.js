@@ -1,10 +1,13 @@
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { User } from "../models/userSchema.js";
+import User from "../models/userSchema.js";
+import dbConnect from "../db/dbConnect.js";
 
 async function handleRegisterController(req, res) {
   try {
     const { username, email, password } = req.body;
+
+    console.log(req.body);
 
     if (!username || !email || !password) {
       return res
@@ -73,7 +76,7 @@ async function handleLoginController(req, res) {
       .cookie("token", token, {
         httpOnly: true,
         sameSite: "strict",
-        maxAge: 24 * 60 * 60 * 1000,
+        maxAge: 2 * 24 * 60 * 60 * 1000, // 2 days
       })
       .json({
         success: true,
@@ -95,6 +98,16 @@ async function handleUserLogoutController(req, res) {
     });
   } catch (error) {
     return res.status(400).json({ messsage: "internal server error", error });
+  }
+}
+async function handleGetAllUsersController(req, res) {
+  try {
+    const users = await User.find({}, "-password"); // Exclude password field
+    return res.status(200).json({ success: true, users });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal server error", error });
   }
 }
 
@@ -123,4 +136,5 @@ export {
   handleLoginController,
   handleUserLogoutController,
   isAuth,
+  handleGetAllUsersController,
 };
