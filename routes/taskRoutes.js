@@ -7,6 +7,7 @@ import {
   getAllTasks,
   gettasks,
   reassignTask,
+  deletetask,
 } from "../controllers/taskControllers.js";
 import auth from "../middlewares/auth.js";
 const router = express.Router();
@@ -18,5 +19,6 @@ router.patch("/:id/status", auth, updateTaskStatus); // Employee updates status
 router.patch("/:id/review", auth, reviewTask); // Admin reviews task
 router.get("/user/:userId", gettasks);
 router.patch("/:id/reassign", auth, reassignTask);
+router.delete("/:id", deletetask);
 
 export default router;
