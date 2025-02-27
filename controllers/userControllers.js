@@ -5,11 +5,11 @@ import dbConnect from "../db/dbConnect.js";
 
 async function handleRegisterController(req, res) {
   try {
-    const { username, email, password } = req.body;
+    const { name, email, password, role } = req.body;
 
     console.log(req.body);
 
-    if (!username || !email || !password) {
+    if (!name || !email || !password || !role) {
       return res
         .status(400)
         .json({ success: false, message: "All fields are required" });
@@ -26,9 +26,10 @@ async function handleRegisterController(req, res) {
     const hashedPassword = await bcryptjs.hash(password, 10);
 
     const newUser = new User({
-      username,
+      name,
       email,
       password: hashedPassword,
+      role,
     });
 
     await newUser.save();
@@ -44,9 +45,8 @@ async function handleRegisterController(req, res) {
 
   // handle login
 }
-
 async function handleLoginController(req, res) {
-  const { email, password } = req.body;
+  const { email, password, role } = req.body; // Removed role from req.body
 
   try {
     const user = await User.findOne({ email });
@@ -54,7 +54,7 @@ async function handleLoginController(req, res) {
     if (!user) {
       return res
         .status(200)
-        .json({ success: false, message: "user not registered!!" });
+        .json({ success: false, message: "User not registered!!" });
     }
 
     const verifyPassword = await bcryptjs.compare(password, user.password);
@@ -62,14 +62,15 @@ async function handleLoginController(req, res) {
     if (!verifyPassword) {
       return res
         .status(200)
-        .json({ success: false, message: "password is incorrect!!" });
+        .json({ success: false, message: "Password is incorrect!!" });
     }
 
-    //JWT AUTHENTICATION
-
-    const token = await jwt.sign({ userId: user._id }, process.env.SECRET_KEY, {
-      expiresIn: "1h",
-    });
+    // JWT Authentication
+    const token = await jwt.sign(
+      { userId: user._id, role: user.role }, // Include role in the token
+      process.env.SECRET_KEY,
+      { expiresIn: "1d" }
+    );
 
     return res
       .status(200)
@@ -80,13 +81,14 @@ async function handleLoginController(req, res) {
       })
       .json({
         success: true,
-        message: "user logged in successfully",
+        message: "User logged in successfully",
         token,
+        role: user.role, // Send role in response
       });
   } catch (error) {
     return res
       .status(400)
-      .json({ success: false, messsage: "internal server error", error });
+      .json({ success: false, message: "Internal server error", error });
   }
 }
 
@@ -102,7 +104,7 @@ async function handleUserLogoutController(req, res) {
 }
 async function handleGetAllUsersController(req, res) {
   try {
-    const users = await User.find({}, "-password"); // Exclude password field
+    const users = await User.find({}, "username email role"); // Include role
     return res.status(200).json({ success: true, users });
   } catch (error) {
     return res
