@@ -2,7 +2,7 @@ import Task from "../models/TaskSchema.js";
 import User from "../models/userSchema.js"; // Ensure you have the User model
 
 export const assignTask = async (req, res) => {
-  const { title, date, assignedTo, category, description } = req.body;
+  const { title, date, assignedTo, category, description, priority } = req.body;
   console.log(req.body);
 
   try {
@@ -19,11 +19,13 @@ export const assignTask = async (req, res) => {
       assignedTo: user._id,
       category,
       description,
+      priority,
     });
 
     await task.save();
     res.status(201).json({ message: "Task assigned successfully", task });
   } catch (error) {
+    console.error("Error assigning task:", error);
     res.status(500).json({ message: "Error assigning task", error });
   }
 };
@@ -40,6 +42,7 @@ export const getAllTasks = async (req, res) => {
 export const getUserTasks = async (req, res) => {
   try {
     // 🛑 Check if `req.user` is defined
+    
     if (!req.user || !req.user._id) {
       return res.status(401).json({ message: "Unauthorized: User not found" });
     }
@@ -75,7 +78,7 @@ export const reviewTask = async (req, res) => {
   //   return res.status(403).json({ message: "Access denied" });
 
   const { status } = req.body;
-  console.log(req.body);
+
   const task = await Task.findById(req.params.id);
 
   task.status = status;

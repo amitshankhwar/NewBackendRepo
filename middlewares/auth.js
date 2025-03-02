@@ -7,20 +7,19 @@ dotenv.config();
 
 async function auth(req, res, next) {
   try {
-    console.log("Cookies received in request:", req.cookies); // 🔥 Debug
+    // 🔥 Debug
 
     const token = req.cookies.token;
-    console.log("Token:", token); // 🔥 Debug
+    // 🔥 Debug
 
     if (!token) {
       return res.status(401).json({ message: "Unauthorized: No token found" });
     }
 
     const decoded = jwt.verify(token, process.env.SECRET_KEY);
-    console.log("Decoded JWT:", decoded); // 🔥 Debug
+    // 🔥 Debug
 
     const user = await User.findById(decoded.userId).select("-password");
-    console.log("Authenticated User:", user); // 🔥 Debug
 
     if (!user || user.role !== "admin") {
       return res.status(401).json({ message: "Unauthorized: Invalid user" });

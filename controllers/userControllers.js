@@ -7,8 +7,6 @@ async function handleRegisterController(req, res) {
   try {
     const { name, email, password, role } = req.body;
 
-    console.log(req.body);
-
     if (!name || !email || !password || !role) {
       return res
         .status(400)
