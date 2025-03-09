@@ -21,9 +21,9 @@ async function auth(req, res, next) {
 
     const user = await User.findById(decoded.userId).select("-password");
 
-    if (!user || user.role !== "admin") {
-      return res.status(401).json({ message: "Unauthorized: Invalid user" });
-    }
+    // if (!user || user.role !== "admin") {
+    //   return res.status(401).json({ message: "Unauthorized: Invalid user" });
+    // }
 
     req.user = user;
     next(); // ✅ Authentication success, move to next middleware

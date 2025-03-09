@@ -1,45 +1,19 @@
-// import mongoose from "mongoose";
-// const taskSchema = new mongoose.Schema({
-//   title: String,
-//   description: String,
-//   assignedTo: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-//   status: {
-//     type: String,
-//     enum: ["pending", "accepted", "completed", "reviewed"],
-//     default: "pending",
-//   },
-//   proof: String,
-// });
-// const Task = mongoose.model("Task", taskSchema);
-// export default Task;
 import mongoose from "mongoose";
 
 const taskSchema = new mongoose.Schema(
   {
-    title: {
-      type: String,
-      required: true,
-    },
-    date: {
-      type: Date,
-      required: true,
-    },
+    title: { type: String, required: true },
+    date: { type: Date, required: true },
     assignedTo: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
-    category: {
-      type: String,
-      required: true,
-    },
-    description: {
-      type: String,
-      required: true,
-    },
+    category: { type: String, required: true },
+    description: { type: String, required: true },
     status: {
       type: String,
-      enum: ["New", "Accepted", "Completed", "Failed", "Reassigned"],
+      enum: ["New", "Accepted", "Completed", "Failed", "Reassigned", "Pending"],
       default: "New",
     },
     priority: {
@@ -47,6 +21,8 @@ const taskSchema = new mongoose.Schema(
       enum: ["Low", "Medium", "High"],
       default: "Low",
     },
+    proof: { type: String }, // Store proof file URL
+    feedback: { type: String, default: "" },
   },
   { timestamps: true }
 );
